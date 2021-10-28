@@ -4,31 +4,32 @@ const mongoose = require("mongoose")
 const mongoosePaginate = require("mongoose-paginate");
 
 const spouseSchema = mongoose.Schema({
-    wives: {type: String, required: true}
+    wives: {type: String, require: true}
 }) 
 
 const offSpringSchema = mongoose.Schema({
-    firstName: {type: String, required: true},
-    middleName: {type: String, required: true},
-    lastName: {type: String, required: true},
-    placeOfBirth: {type: String, required: true},
-    occupation: {type: String, required: true}
+    firstName: {type: String, require: true},
+    middleName: {type: String, require: true},
+    lastName: {type: String, require: true},
+    placeOfBirth: {type: String, require: true},
+    occupation: {type: String, require: true}
 })
 
 const Schema    = mongoose.Schema({
-    image: {type: String, required: true},
-    surName: {type: String, required: true},
-    firstName: {type: String, required: true},
-    otherName: {type: String, required: false},
-    sex: {type: String, required: true},
-    dateOfBirth: {type: String, required: true},
-    maritalStatus: {type: String, required: true},
-    phoneNumber: {type: Number, required: true},
-    fatherName: {type: String, required: true},
-    motherName: {type: String, required: true},
+    userId: {type: String, require: true},
+    image: {type: String, require: true},
+    surName: {type: String, require: true},
+    firstName: {type: String, require: true},
+    otherName: {type: String, require: false},
+    sex: {type: String, require: true},
+    dateOfBirth: {type: String, require: true},
+    maritalStatus: {type: String, require: true},
+    phoneNumber: {type: Number, require: true},
+    fatherName: {type: String, require: true},
+    motherName: {type: String, require: true},
     spouse: [spouseSchema],
-    offSpring: [offSpringSchema]
-
+    offSpring: [offSpringSchema],
+    dateCreated: {type: Date, default: Date.now}
 }, 
 {
     toJSON: {

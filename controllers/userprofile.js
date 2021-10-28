@@ -8,23 +8,10 @@ const UserProfileRepository = require("../models/UserProfileRepository")
  * @return {Promise<*>}
  */
 
- global.createSuccessResponse = (res, data, message, code= 200, isPaginated = false) => {
-    if (isPaginated || (data && data.docs)) {
-        data.data = data.docs;
-        delete data.docs;
-        delete data.pages
-        delete data.limit
-        data.status = code
-        data.message = message;
-        data.page = parseInt(data.page);
-        return res.status(code).json(data);
-    }
-    return res.status(code).json({data});
-};
 
 exports.createUserProfile = async (req,res,next)=>{
-    let {image, surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber,fatherName,motherName,spouse,offSpring } = req.body;
-    let newUserProfile = {image, surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber,fatherName,motherName,spouse,offSpring }
+    let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber,fatherName,motherName,spouse,offSpring } = req.body;
+    let newUserProfile = {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber,fatherName,motherName,spouse,offSpring }
     try{
         let userProfile = await UserProfileRepository.create(newUserProfile)
         return res.status(200).send({
