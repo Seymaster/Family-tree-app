@@ -7,6 +7,7 @@ const cors    = require("cors");
 const mongoose = require("mongoose")
 const config   = require("./config/mongo");
 const userProfileRoute = require("./routes/userprofile")
+const eventRoute = require("./routes/events")
 
 mongoose.Promise = global.Promise;
 
@@ -19,6 +20,8 @@ app.listen(PORT, (err)=> {
 app.use(logger("dev"));
 app.use(express.json());
 app.use("/api/v1", userProfileRoute);
+app.use("/api/v1", eventRoute);
+
 
 mongoose.connect(config.dbUrl, {
     useNewUrlParser: true, useUnifiedTopology: true

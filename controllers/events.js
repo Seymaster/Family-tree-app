@@ -8,6 +8,20 @@ const EventRepository = require("../models/EventRepository")
  * @return {Promise<*>}
  */
 
+ global.createSuccessResponse = (res, data, message, code= 200, isPaginated = false) => {
+    if (isPaginated || (data && data.docs)) {
+        data.data = data.docs;
+        delete data.docs;
+        delete data.pages
+        delete data.limit
+        data.status = code
+        data.message = message;
+        data.page = parseInt(data.page);
+        return res.status(code).json(data);
+    }
+    return res.status(code).json({data});
+};
+
 
 exports.createEvent = async (req,res,next)=>{
     let {userId, eventName, eventType, eventLocation, eventDate, eventEndDate, eventDesc, eventImage} = req.body;
@@ -40,13 +54,13 @@ exports.createEvent = async (req,res,next)=>{
 }
 
 exports.getEventById = async (req,res,next)=>{
-    let { profileId } = req.params;
+    let { eventId } = req.params;
     try{
-        const event = await EventRepository.findById({_id: profileId})
+        const event = await EventRepository.findById({_id: eventId})
         if(event === null){
             return res.status(400).send({
                 status: 404,
-                message: `No Event found for id ${profileId}`,
+                message: `No Event found for id ${eventId}`,
                 data: event
             })
         }
@@ -63,5 +77,23 @@ exports.getEventById = async (req,res,next)=>{
             message: "Not Found",
             error: err.name
         })
+    }
+};
+
+exports.getEvent = async (req,res,next)=>{
+    let {page,limit, ...query} = req.query;
+    if(query.user_id) delete query.user_id;
+    page = page || 1;
+    limit = limit || 100;
+    const event = await EventRepository.all(query, {_id: -1}, page, limit);;
+    if(event.length == 0){
+        return res.status(200).send({
+            status: 404,
+            message: "Not Found",
+            data: event
+        })
+    }else{
+        let message = "Event Loaded Successfully"
+        return createSuccessResponse(res, event, message);
     }
 };
