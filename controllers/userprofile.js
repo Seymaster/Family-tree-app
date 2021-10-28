@@ -96,7 +96,7 @@ exports.addOffSpring =async (req,res,next) =>{
         let data = await UserProfileRepository.findOne({_id: profileId})
         return res.status(200).send({
             status:200,
-            message: "Wife Added Successfully",
+            message: "OffSpring Added Successfully",
             data: data 
         })
     }
