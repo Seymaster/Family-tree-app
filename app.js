@@ -19,6 +19,7 @@ app.listen(PORT, (err)=> {
 
 app.use(logger("dev"));
 app.use(express.json());
+app.use(cors({origin: "*"}));
 app.use("/api/v1", userProfileRoute);
 app.use("/api/v1", eventRoute);
 
