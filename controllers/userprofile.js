@@ -1,4 +1,7 @@
 const UserProfileRepository = require("../models/UserProfileRepository")
+const FamilyRepository = require("../models/FamilyRepository")
+const { createUser } = require("../controllers/user");
+const Family = require("../models/Family");
 
 /**
  * Create UserProfile and CRUD details
@@ -10,8 +13,106 @@ const UserProfileRepository = require("../models/UserProfileRepository")
 
 
 exports.createUserProfile = async (req,res,next)=>{
-    let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber,fatherName,motherName,spouse,offSpring } = req.body;
-    let newUserProfile = {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber,fatherName,motherName,spouse,offSpring }
+    let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring } = req.body;
+    let father = await FamilyRepository.findOne({email: fatherEmail})
+    if(!father){
+        let { user } = await createUser(fatherEmail)
+        user = JSON.parse(user);
+        if(user.error){
+            return res.status(403).send({
+                status:403,
+                message: user
+            })
+        }
+        user = user.data
+        const fatherUserId = user.user.userId;
+        let name = fatherName
+        let parent = [{father: fatherUserId}]
+        let email = fatherEmail
+        let partner = null
+        let newFamily = {userId, name, email,partner, parent }
+        await FamilyRepository.create(newFamily)
+    }else{
+        return res.status(403).send({
+            status:403,
+            message: "Father Already Exist for this User"
+        })
+    }
+    let mother = await FamilyRepository.findOne({email: motherEmail})
+    if(!mother){
+        let { user } = await createUser(motherEmail)
+        user = JSON.parse(user);
+        if(user.error){
+            return res.status(403).send({
+                status:403,
+                message: user
+            })
+        }
+        user = user.data
+        const motherUserId = user.user.userId;
+        let Family = await FamilyRepository.findOne({email: fatherEmail})
+        let familyId = Family.id
+        let parentId = Family.parent[0].id
+        await FamilyRepository.update({id: familyId, "parent._id": parentId }, {$set: {"parent.$.mother": motherUserId}})
+    }else{
+        return res.status(403).send({
+            status:403,
+            message: "Mother Already Exist for this User"
+        })
+    }
+    if(spouse[0] != undefined){    
+        let spouseEmail = spouse[0].email
+        let findSpouse = await FamilyRepository.findOne({email: spouseEmail})
+        if(!findSpouse){
+            let { user } = await createUser(spouseEmail)
+            user = JSON.parse(user);
+            if(user.error){
+                return res.status(403).send({
+                    status:403,
+                    message: user
+                })
+            }
+            user = user.data
+            const spouseUserId = user.user.userId;
+            let name = spouse[0].wives
+            let partner = [{wives: spouseUserId}]
+            let parent = null
+            let email = spouseEmail
+            let newFamily= {userId,name, email, partner, parent }
+            await FamilyRepository.create(newFamily)
+        }else{
+            return res.status(403).send({
+                status:403,
+                message: "Spouse Already Exist for this User"
+            })
+        }
+    }
+    if(offSpring[0] != undefined){
+        let offSpringEmail = offSpring[0].email
+        let findOffSpring = await FamilyRepository.findOne({email: offSpringEmail})
+        if(!findOffSpring){
+            let { user } = await createUser(offSpringEmail)
+            user = JSON.parse(user);
+            if(user.error){
+                return res.status(403).send({
+                    status:403,
+                    message: user
+                })
+            }
+            let name = offSpring[0].firstName
+            let partner = null
+            let parent = [{father: userId}]
+            let email = offSpringEmail
+            let newFamily= {userId,name, email, partner, parent }
+            await FamilyRepository.create(newFamily)
+        }else{
+            return res.status(403).send({
+                status:403,
+                message: "This Offspring Already Exist for this User"
+            })
+        }
+    }
+    let newUserProfile = {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring }
     try{
         let userProfile = await UserProfileRepository.create(newUserProfile)
         return res.status(200).send({
@@ -66,6 +167,88 @@ exports.getUserProfileById = async (req,res,next)=>{
     }
 };
 
+exports.getUserParent = async (req,res,next)=>{
+    let { userId } = req.params;
+    try{
+        let Family = await FamilyRepository.findOne({userId: userId})
+        let parent = Family.parent[0]
+        if(parent === null){
+            return res.status(404).send({
+                status: 404,
+                message: `No profile found for id ${userId}`,
+                data: parent
+            })
+        }
+        else{
+            return res.status(200).send({
+                status: 200,
+                message: `Parent for User ${userId} Loaded Successfully`,
+                data: parent
+            })
+        }
+    }catch(err){
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err.name
+        })
+    }
+};
+
+exports.getUserSpouse = async (req,res,next)=>{
+    let { userId,partnerId } = req.params;
+    try{
+        let spouse = await FamilyRepository.all({userId: userId, "partner.wives": partnerId})
+        if(spouse === null){
+            return res.status(404).send({
+                status: 404,
+                message: `No profile found for id ${userId}`,
+                data: spouse
+            })
+        }
+        else{
+            return res.status(200).send({
+                status: 200,
+                message: `Spouse for User ${userId} Loaded Successfully`,
+                data: spouse
+            })
+        }
+    }catch(err){
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err.name
+        })
+    }
+};
+
+exports.getUserOffSpring = async (req,res,next)=>{
+    let { userId } = req.params;
+    try{
+        let Family = await FamilyRepository.all({"parent.father" : userId})
+        // let Family = await FamilyRepository.findOne({parent :{"$in": userId}})
+        if(Family === null){
+            return res.status(404).send({
+                status: 404,
+                message: `No profile found for id ${userId}`,
+                data: Family
+            })
+        }
+        else{
+            return res.status(200).send({
+                status: 200,
+                message: `Offspring for User ${userId} Loaded Successfully`,
+                data: Family
+            })
+        }
+    }catch(err){
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err.name
+        })
+    }
+};
 exports.addWives =async (req,res,next) =>{
     let { profileId } = req.params;
     let {...payload}   = req.body;

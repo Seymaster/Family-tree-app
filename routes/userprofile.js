@@ -11,6 +11,12 @@ router.put("/updatespouse/:profileId", userProfileController.addWives)
 
 router.put("/updateoffspring/:profileId", userProfileController.addOffSpring)
 
+router.get("/getparent/:userId", userProfileController.getUserParent)
+
+router.get("/getspouse/:userId/:partnerId", userProfileController.getUserSpouse)
+
+router.get("/getoffspring/:userId", userProfileController.getUserOffSpring)
+
 
 
 
