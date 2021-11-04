@@ -196,9 +196,9 @@ exports.getUserParent = async (req,res,next)=>{
 };
 
 exports.getUserSpouse = async (req,res,next)=>{
-    let { userId,partnerId } = req.params;
+    let { userId, partnerId } = req.params;
     try{
-        let spouse = await FamilyRepository.all({userId: userId, "partner.wives": partnerId})
+        let spouse = await FamilyRepository.all({userId: userId, "partner.wives._id": partnerId})
         if(spouse === null){
             return res.status(404).send({
                 status: 404,
@@ -254,7 +254,34 @@ exports.addWives =async (req,res,next) =>{
     let { profileId } = req.params;
     let {...payload}   = req.body;
     let Spouse = await UserProfileRepository.findOne({_id: profileId})
+    console.log(Spouse)
+    let userId = Spouse.userId
     if(Spouse){
+        let spouseEmail = payload.email
+        let findSpouse = await FamilyRepository.findOne({userId: userId, email: spouseEmail})
+        if(!findSpouse){
+            let { user } = await createUser(spouseEmail)
+            user = JSON.parse(user);
+            if(user.error){
+                return res.status(403).send({
+                    status:403,
+                    message: user
+                })
+            }
+            user = user.data
+            const spouseUserId = user.user.userId;
+            let name = payload.wives
+            let partner = [{wives: spouseUserId}]
+            let parent = null
+            let email = spouseEmail
+            let newFamily= {userId,name, email, partner, parent }
+            await FamilyRepository.create(newFamily)
+        }else{
+            return res.status(403).send({
+                status:403,
+                message: "This Spouse Already Exist for this User"
+            })
+        }
         await UserProfileRepository.upsert({_id: profileId}, {$push: {spouse: payload}})
         let data = await UserProfileRepository.findOne({_id: profileId})
         return res.status(200).send({
@@ -271,23 +298,48 @@ exports.addWives =async (req,res,next) =>{
     }
 }
 
+
 exports.addOffSpring =async (req,res,next) =>{
     let { profileId } = req.params;
     let {...payload}   = req.body;
     let Offspring = await UserProfileRepository.findOne({_id: profileId})
-    if(Offspring){
-        let update = await UserProfileRepository.upsert({_id: profileId}, {$push: {offSpring: payload}})
-        let data = await UserProfileRepository.findOne({_id: profileId})
-        return res.status(200).send({
-            status:200,
-            message: "OffSpring Added Successfully",
-            data: data 
-        })
-    }
-    else{
-        return res.status(404).send({
-            status:404,
-            message: "User Profile not found" 
-        });
-    }
+        if(Offspring){
+            let offSpringEmail = payload.email
+            let findOffSpring = await FamilyRepository.findOne({email: offSpringEmail})
+            if(!findOffSpring){
+                let { user } = await createUser(offSpringEmail)
+                user = JSON.parse(user);
+                if(user.error){
+                    return res.status(403).send({
+                        status:403,
+                        message: user
+                    })
+                }
+                let name = payload.firstName
+                let userId = payload.userId
+                let partner = null
+                let parent = [{father: userId}]
+                let email = offSpringEmail
+                let newFamily= {userId,name, email, partner, parent }
+                await FamilyRepository.create(newFamily)
+            }else{
+                return res.status(403).send({
+                    status:403,
+                    message: "This Offspring Already Exist for this User"
+                })
+            }
+            await UserProfileRepository.upsert({_id: profileId}, {$push: {offSpring: payload}})
+            let data = await UserProfileRepository.findOne({_id: profileId})
+            return res.status(200).send({
+                status:200,
+                message: "OffSpring Added Successfully",
+                data: data 
+            })
+        }
+        else{
+            return res.status(404).send({
+                status:404,
+                message: "User Profile not found" 
+            });
+        }
 }
