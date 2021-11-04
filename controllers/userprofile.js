@@ -249,12 +249,13 @@ exports.getUserOffSpring = async (req,res,next)=>{
         })
     }
 };
+
 exports.addWives =async (req,res,next) =>{
     let { profileId } = req.params;
     let {...payload}   = req.body;
     let Spouse = await UserProfileRepository.findOne({_id: profileId})
     if(Spouse){
-        let update = await UserProfileRepository.upsert({_id: profileId}, {$push: {spouse: payload}})
+        await UserProfileRepository.upsert({_id: profileId}, {$push: {spouse: payload}})
         let data = await UserProfileRepository.findOne({_id: profileId})
         return res.status(200).send({
             status:200,
