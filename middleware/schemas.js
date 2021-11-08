@@ -25,21 +25,26 @@ const userProfileSchema = {
         sex: Joi.string().required(),
         dateOfBirth: Joi.string().required(),
         maritalStatus: Joi.string().required(),
-        phoneNumber: Joi.string().required(),
+        phoneNumber: Joi.number().required(),
         fatherName: Joi.string().required(),
+        fatherEmail: Joi.string().required(),
         motherName: Joi.string().required(),
+        motherEmail: Joi.string().required(),
         spouse: Joi.array().required().items(
             Joi.object().keys({
-                wives: Joi.string().required()
+                wives: Joi.string().optional(),
+                email: Joi.string().email().optional()
         })),
         offSpring: Joi.array().required().items(
             Joi.object().keys({
-                firstName: Joi.string().required(),
-                middleName: Joi.string().required(),
-                lastName: Joi.string().required(),
-                placeOfBirth: Joi.string().required(),
-                occupation: Joi.string().required()
+                firstName: Joi.string().optional(),
+                middleName: Joi.string().optional(),
+                lastName: Joi.string().optional(),
+                placeOfBirth: Joi.string().optional(),
+                occupation: Joi.string().optional(),
+                email: Joi.string().email().optional()
         }))
     })
-}
+}// .options({ allowUnknown: true })
+
 module.exports = { eventSchema, userProfileSchema}

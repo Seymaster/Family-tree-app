@@ -1,9 +1,11 @@
 const express = require("express");
 const router  = express.Router();
 const userProfileController = require("../controllers/userprofile")
+const schemas = require("../middleware/schemas");
+const { validate } = require("../middleware/helper");
 
 
-router.post("/userprofile", userProfileController.createUserProfile)
+router.post("/userprofile", validate(schemas.userProfileSchema.userProfilePost, 'body'), userProfileController.createUserProfile)
 
 router.get("/userprofile/:profileId", userProfileController.getUserProfileById)
 
