@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(cors({origin: "*"}));
 app.use("/api/v1", userProfileRoute);
 app.use("/api/v1", eventRoute);
+app.use("/events", webookRouter)
 
 
 mongoose.connect(config.dbUrl, {
