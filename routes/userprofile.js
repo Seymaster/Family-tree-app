@@ -1,3 +1,17 @@
+'use strict'
+
+
+/*
+|--------------------------------------------------------------------------
+| Routes
+|--------------------------------------------------------------------------
+|
+| Http routes are entry points to your web application. You can create
+| routes for different URLs and bind Controller actions to them.
+|
+|
+*/
+
 const express = require("express");
 const router  = express.Router();
 const userProfileController = require("../controllers/userprofile")
@@ -18,6 +32,8 @@ router.get("/getparent/:userId", userProfileController.getUserParent)
 router.get("/getspouse/:userId/:partnerId", userProfileController.getUserSpouse)
 
 router.get("/getoffspring/:userId", userProfileController.getUserOffSpring)
+
+// router.get("/familytree/:userId", userProfileController.getfamilytree)
 
 
 

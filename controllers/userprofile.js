@@ -343,3 +343,21 @@ exports.addOffSpring =async (req,res,next) =>{
             });
         }
 }
+
+// exports.getfamilytree = async (req,res,next)=>{
+//     let { userId } = req.params;
+//     try{
+//         let Parent = await FamilyRepository.all({userId: userId})
+//         // parent = Parent.parent[0]
+//         return res.status(200).send({
+//             data: Parent
+//         })
+//     }catch(err){
+//         console.log(err)
+//         return res.status(400).send({
+//             status: 404,
+//             message: "Not Found",
+//             error: err
+//         })
+//     }
+// }

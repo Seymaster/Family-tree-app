@@ -6,7 +6,8 @@ const clientSecret = process.env.clientSecret
 
 // Create User API
 async function createUser(email){
-    let raw = { "name":"Unnamed User",
+    let raw = { 
+                "name":"Unnamed User",
                 "email": email,
                 "password":"pmb",
                 "age":12,
@@ -14,10 +15,13 @@ async function createUser(email){
                 "anyOtherThing":"value",
                 "anyOtherThing1":"value1",
                 "parentId":"ffdc48ee-46da-434b-ae85-27f461798848",
-                "verificationType":"email",  
-                "verification": true,
-                "redirectURL": redirect_url
-             };
+                "options": { 
+                            "verificationType":"email",  
+                            "verification": true,
+                            "redirectURL": "http://google.com"
+                            }
+        
+    }
 
     let requestOptions = {
     method: 'POST',
@@ -39,5 +43,9 @@ async function createUser(email){
 
     // console.log(result);
 }
+// let email = "sampleowanb1e@yopmail.com"
+// createUser(email)
+// .then(data=> console.log(data))
+// .catch(err=> console.log(err))
 
 module.exports = { createUser }
