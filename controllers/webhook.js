@@ -1,6 +1,6 @@
 exports.getNewUser = async (req,res,next) =>{
     let data = req.body
-    data = data.data.data
+    data = data.event
     console.log(data)
     return res.status(200).send({
         status: 200,
