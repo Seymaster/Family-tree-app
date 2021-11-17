@@ -3,7 +3,7 @@ exports.getNewUser = async (req,res,next) =>{
     console.log(user.data)
     return res.status(200).send({
         status: 200,
-        message: "User Created successfully",
+        message: "Webhook User Created successfully",
         data: user.data
     })
 }
