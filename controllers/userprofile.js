@@ -1,7 +1,7 @@
 const UserProfileRepository = require("../models/UserProfileRepository")
 const FamilyRepository = require("../models/FamilyRepository")
 const { createUser } = require("../controllers/user");
-const Family = require("../models/Family");
+const { sendMail } = require("./mail")
 
 /**
  * Create UserProfile and CRUD details
@@ -11,14 +11,31 @@ const Family = require("../models/Family");
  * @return {Promise<*>}
  */
 
+ global.createSuccessResponse = (res, data, message, code= 200, isPaginated = false) => {
+    if (isPaginated || (data && data.docs)) {
+        data.data = data.docs;
+        delete data.docs;
+        delete data.pages
+        delete data.limit
+        data.status = code
+        data.message = message;
+        data.page = parseInt(data.page);
+        return res.status(code).json(data);
+    }
+    return res.status(code).json({data});
+};
 
 exports.createUserProfile = async (req,res,next)=>{
     let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring } = req.body;
     let father = await FamilyRepository.findOne({email: fatherEmail})
     if(!father){
+        let email = fatherEmail
         let name = fatherName
-        let newFamily = {userId,name,email,partner,parent }
+        let familyId = userId
+        let newFamily = {name,email,familyId}
         await FamilyRepository.create(newFamily)
+        let message = `You have been added as father for ${firstName} ${otherName} on our platform kindly visit our website to signup to complete your user registration`
+        await sendMail(email, message)
     }else{
         return res.status(403).send({
             status:403,
@@ -27,9 +44,13 @@ exports.createUserProfile = async (req,res,next)=>{
     }
     let mother = await FamilyRepository.findOne({email: motherEmail})
     if(!mother){
+        let email = motherEmail
         let name = motherName
-        let newFamily = {userId,name,email,partner,parent }
+        let familyId = userId
+        let newFamily = {name,email,familyId}
         await FamilyRepository.create(newFamily)
+        let message = `You have been added as Mother for ${firstName} ${otherName} on our platform kindly visit our website to signup to complete your user registration`
+        await sendMail(email, message)
     }else{
         return res.status(403).send({
             status:403,
@@ -40,9 +61,13 @@ exports.createUserProfile = async (req,res,next)=>{
         let spouseEmail = spouse[0].email
         let findSpouse = await FamilyRepository.findOne({email: spouseEmail})
         if(!findSpouse){
+            let email = spouseEmail
             let name = spouse[0].wives
-            let newFamily= {userId,name, email, partner, parent }
+            let familyId = userId
+            let newFamily = {name,email,familyId}
             await FamilyRepository.create(newFamily)
+            let message = `You have been added as Spouse for ${firstName} ${otherName} on our platform kindly visit our website to signup to complete your user registration`
+        await sendMail(email, message)
         }else{
             return res.status(403).send({
                 status:403,
@@ -57,8 +82,11 @@ exports.createUserProfile = async (req,res,next)=>{
             let name = offSpring[0].firstName
             let parent = [{father: userId}]
             let email = offSpringEmail
-            let newFamily= {userId,name, email, parent }
+            let familyId = userId
+            let newFamily= {userId,name, email, parent,familyId }
             await FamilyRepository.create(newFamily)
+            let message = `You have been added as Child for ${firstName} ${otherName} on our platform kindly visit our website to signup to complete your user registration`
+            await sendMail(email, message)
         }else{
             return res.status(403).send({
                 status:403,
@@ -314,3 +342,26 @@ exports.addOffSpring =async (req,res,next) =>{
 //         })
 //     }
 // }
+
+exports.getBirthday = async (req, res, next)=>{
+    let {familyId} = req.params;
+    try{
+        let allFamily = await FamilyRepository.all({familyId: familyId})
+        let userIds = []
+        allFamily.map(data =>{
+            userIds.push(
+            data.userId)
+        })
+        let dob = await UserProfileRepository.all({
+            $or: [{_id: {$in: userIds}}]
+        }, {_id: -1}, page, limit) 
+        message = `Profiles for familyId ${familyId} loaded successfully`
+        return createSuccessResponse(res, dob ,message)
+    }catch(error){
+        return res.status(400).send({
+            status:400,
+            message: "Error",
+            error: error   
+        });
+    }
+}

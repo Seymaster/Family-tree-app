@@ -9,7 +9,7 @@ class FamilyRepository extends Repository{
     }
 
     nonMetaFields(){
-        return ["userId","name","email","partner","parent"]
+        return ["userId","familyId","name","email","partner","parent"]
     }
 }
 

@@ -14,6 +14,7 @@ const spouseSchema = mongoose.Schema({
 
 const Schema    = mongoose.Schema({
     userId: {type: String, require: false,default: null},
+    familyId: {type: String, require: true},
     name: {type: String, require: true},
     email: {type: String, require: true},
     parent: [parentSchema],
