@@ -4,6 +4,6 @@ exports.getNewUser = async (req,res,next) =>{
     return res.status(200).send({
         status: 200,
         message: "User Created successfully",
-        data: data
+        data: user
     })
 }
