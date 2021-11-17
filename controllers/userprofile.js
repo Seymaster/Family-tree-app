@@ -16,21 +16,8 @@ exports.createUserProfile = async (req,res,next)=>{
     let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring } = req.body;
     let father = await FamilyRepository.findOne({email: fatherEmail})
     if(!father){
-        let { user } = await createUser(fatherEmail)
-        user = JSON.parse(user);
-        if(user.error){
-            return res.status(403).send({
-                status:403,
-                message: user
-            })
-        }
-        user = user.data
-        const fatherUserId = user.user.userId;
         let name = fatherName
-        let parent = [{father: fatherUserId}]
-        let email = fatherEmail
-        let partner = null
-        let newFamily = {userId, name, email,partner, parent }
+        let newFamily = {userId,name,email,partner,parent }
         await FamilyRepository.create(newFamily)
     }else{
         return res.status(403).send({
@@ -40,20 +27,9 @@ exports.createUserProfile = async (req,res,next)=>{
     }
     let mother = await FamilyRepository.findOne({email: motherEmail})
     if(!mother){
-        let { user } = await createUser(motherEmail)
-        user = JSON.parse(user);
-        if(user.error){
-            return res.status(403).send({
-                status:403,
-                message: user
-            })
-        }
-        user = user.data
-        const motherUserId = user.user.userId;
-        let Family = await FamilyRepository.findOne({email: fatherEmail})
-        let familyId = Family.id
-        let parentId = Family.parent[0].id
-        await FamilyRepository.update({id: familyId, "parent._id": parentId }, {$set: {"parent.$.mother": motherUserId}})
+        let name = motherName
+        let newFamily = {userId,name,email,partner,parent }
+        await FamilyRepository.create(newFamily)
     }else{
         return res.status(403).send({
             status:403,
@@ -64,20 +40,7 @@ exports.createUserProfile = async (req,res,next)=>{
         let spouseEmail = spouse[0].email
         let findSpouse = await FamilyRepository.findOne({email: spouseEmail})
         if(!findSpouse){
-            let { user } = await createUser(spouseEmail)
-            user = JSON.parse(user);
-            if(user.error){
-                return res.status(403).send({
-                    status:403,
-                    message: user
-                })
-            }
-            user = user.data
-            const spouseUserId = user.user.userId;
             let name = spouse[0].wives
-            let partner = [{wives: spouseUserId}]
-            let parent = null
-            let email = spouseEmail
             let newFamily= {userId,name, email, partner, parent }
             await FamilyRepository.create(newFamily)
         }else{
@@ -91,19 +54,10 @@ exports.createUserProfile = async (req,res,next)=>{
         let offSpringEmail = offSpring[0].email
         let findOffSpring = await FamilyRepository.findOne({email: offSpringEmail})
         if(!findOffSpring){
-            let { user } = await createUser(offSpringEmail)
-            user = JSON.parse(user);
-            if(user.error){
-                return res.status(403).send({
-                    status:403,
-                    message: user
-                })
-            }
             let name = offSpring[0].firstName
-            let partner = null
             let parent = [{father: userId}]
             let email = offSpringEmail
-            let newFamily= {userId,name, email, partner, parent }
+            let newFamily= {userId,name, email, parent }
             await FamilyRepository.create(newFamily)
         }else{
             return res.status(403).send({
@@ -226,7 +180,6 @@ exports.getUserOffSpring = async (req,res,next)=>{
     let { userId } = req.params;
     try{
         let Family = await FamilyRepository.all({"parent.father" : userId})
-        // let Family = await FamilyRepository.findOne({parent :{"$in": userId}})
         if(Family === null){
             return res.status(404).send({
                 status: 404,

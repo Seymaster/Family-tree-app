@@ -4,7 +4,7 @@ const WebhookController = require("../controllers/webhook")
 
 
 // GET /all events
-router.post("/all", WebhookController.allEvent);
+router.post("/getnewuser", WebhookController.getNewUser);
 
 
 module.exports = router;
