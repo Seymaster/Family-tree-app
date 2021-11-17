@@ -29,7 +29,7 @@ async function sendMail(recipient,message){
             // ],
             "outroLines": [
                 // `${redirect_url}`,
-                // "2. Still below button or rather main content"
+                "2. Still below button or rather main content"
             ]
         },
         // "button": {

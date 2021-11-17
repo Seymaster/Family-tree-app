@@ -43,7 +43,7 @@ async function createUser(email){
 
     // console.log(result);
 }
-let email = "dad1@yopmail.com"
+let email = "mom1@yopmail.com"
 createUser(email)
 .then(data=> console.log(data))
 .catch(err=> console.log(err))

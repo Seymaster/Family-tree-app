@@ -33,6 +33,8 @@ router.get("/getspouse/:userId/:partnerId", userProfileController.getUserSpouse)
 
 router.get("/getoffspring/:userId", userProfileController.getUserOffSpring)
 
+router.get("/allfamilies/:familyId", userProfileController.getBirthday)
+
 // router.get("/familytree/:userId", userProfileController.getfamilytree)
 
 

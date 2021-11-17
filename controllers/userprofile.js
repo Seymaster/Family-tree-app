@@ -344,20 +344,32 @@ exports.addOffSpring =async (req,res,next) =>{
 // }
 
 exports.getBirthday = async (req, res, next)=>{
-    let {familyId} = req.params;
+    let {...query} = req.params
+    let {page,limit } = req.query;
+    page = page || 1;
+    limit = limit || 100;
     try{
-        let allFamily = await FamilyRepository.all({familyId: familyId})
+        let allFamily = await FamilyRepository.all(query)
         let userIds = []
         allFamily.map(data =>{
             userIds.push(
             data.userId)
         })
         let dob = await UserProfileRepository.all({
-            $or: [{_id: {$in: userIds}}]
+            $or: [{userId: {$in: userIds}}]
         }, {_id: -1}, page, limit) 
-        message = `Profiles for familyId ${familyId} loaded successfully`
+        dob = dob.docs
+        let birthday = []
+        dob.map(data =>{
+            birthday.push(
+                data.dateOfBirth
+            )
+        })
+        // console.log(birthday)
+        message = `Profiles for familyId ${query.familyId} loaded successfully`
         return createSuccessResponse(res, dob ,message)
     }catch(error){
+        console.log(error)
         return res.status(400).send({
             status:400,
             message: "Error",

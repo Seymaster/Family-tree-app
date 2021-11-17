@@ -19,7 +19,6 @@ const offSpringSchema = mongoose.Schema({
 
 const Schema    = mongoose.Schema({
     userId: {type: String, require: true},
-    familyId: {type: String, require: false, default: null},
     image: {type: String, require: true},
     surName: {type: String, require: true},
     firstName: {type: String, require: true},
