@@ -358,13 +358,13 @@ exports.getBirthday = async (req, res, next)=>{
         let dob = await UserProfileRepository.all({
             $or: [{userId: {$in: userIds}}]
         }, {_id: -1}, page, limit) 
-        dob = dob.docs
-        let birthday = []
-        dob.map(data =>{
-            birthday.push(
-                data.dateOfBirth
-            )
-        })
+        // dob = dob.docs
+        // let birthday = []
+        // dob.map(data =>{
+        //     birthday.push(
+        //         data.dateOfBirth
+        //     )
+        // })
         // console.log(birthday)
         message = `Profiles for familyId ${query.familyId} loaded successfully`
         return createSuccessResponse(res, dob ,message)
