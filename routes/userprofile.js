@@ -21,7 +21,7 @@ const { validate } = require("../middleware/helper");
 
 router.post("/userprofile", validate(schemas.userProfileSchema.userProfilePost, 'body'), userProfileController.createUserProfile)
 
-router.get("/userprofile/:profileId", userProfileController.getUserProfileById)
+router.get("/userprofile", userProfileController.getUserProfileById)
 
 router.put("/updatespouse/:profileId", userProfileController.addWives)
 

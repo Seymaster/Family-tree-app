@@ -123,9 +123,12 @@ exports.createUserProfile = async (req,res,next)=>{
 }
 
 exports.getUserProfileById = async (req,res,next)=>{
-    let { profileId } = req.params;
+    let {...query} = req.query;
+    let {page,limit } = req.query;
+    page = page || 1;
+    limit = limit || 100;
     try{
-        const userProfile = await UserProfileRepository.findById({_id: profileId})
+        let userProfile = await UserProfileRepository.all(query, {_id: -1}, page, limit)
         if(userProfile === null){
             return res.status(400).send({
                 status: 404,
@@ -134,17 +137,14 @@ exports.getUserProfileById = async (req,res,next)=>{
             })
         }
         else{
-            return res.status(200).send({
-                status: 200,
-                message: "User Profile Loaded Succefully",
-                data: userProfile
-            })
+            message = `Profile for Id ${query} loaded successfully`
+            return createSuccessResponse(res, userProfile ,message)
         }
     }catch(err){
         return res.status(400).send({
             status: 404,
             message: "Not Found",
-            error: err.name
+            error: err
         })
     }
 };
