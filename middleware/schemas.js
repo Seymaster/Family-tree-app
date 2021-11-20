@@ -10,7 +10,7 @@ const eventSchema = {
         eventDate: Joi.string().optional(),
         eventEndDate: Joi.string().required(),
         eventDesc: Joi.string().required(),
-        eventImages: Joi.string().required(),
+        eventImage: Joi.string().required(),
     })
     // .options({ allowUnknown: true })
 }
