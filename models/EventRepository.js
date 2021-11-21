@@ -9,7 +9,7 @@ class EventRepository extends Repository{
     }
 
     nonMetaFields(){
-        return ["eventName","eventType","eventLocation","start","end","eventDescription","eventImage"]
+        return ["title","eventType","eventLocation","start","end","eventDescription","eventImage"]
     }
 }
 

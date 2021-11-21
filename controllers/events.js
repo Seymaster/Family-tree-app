@@ -24,8 +24,8 @@ const EventRepository = require("../models/EventRepository")
 
 
 exports.createEvent = async (req,res,next)=>{
-    let {userId, eventName, eventType, eventLocation, start, end, eventDesc, eventImage} = req.body;
-    let newEvent = {userId, eventName, eventType, eventLocation, start, end, eventDesc, eventImage};
+    let {userId, title, eventType, eventLocation, start, end, eventDesc, eventImage} = req.body;
+    let newEvent = {userId, title, eventType, eventLocation, start, end, eventDesc, eventImage};
     try{
         let event = await EventRepository.create(newEvent)
         return res.status(200).send({

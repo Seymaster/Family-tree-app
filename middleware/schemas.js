@@ -4,7 +4,7 @@ const Joi = require("joi");
 const eventSchema = {
     eventPost: Joi.object().keys({
         userId: Joi.string().required(),
-        eventName: Joi.string().required(),
+        title: Joi.string().required(),
         eventType: Joi.string().required(),
         eventLocation: Joi.string().required(),
         start: Joi.string().required(),

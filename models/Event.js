@@ -6,7 +6,7 @@ const mongoosePaginate = require("mongoose-paginate");
 
 const Schema = mongoose.Schema({
     userId: {type: String, require: true},
-    eventName: {type: String, require: true},
+    title: {type: String, require: true},
     eventType: {type: String, require: true},
     eventLocation: {type: String, require: true},
     start: {type: String, require: true, unique: true},
