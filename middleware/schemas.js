@@ -7,10 +7,10 @@ const eventSchema = {
         eventName: Joi.string().required(),
         eventType: Joi.string().required(),
         eventLocation: Joi.string().required(),
-        eventDate: Joi.string().optional(),
-        eventEndDate: Joi.string().required(),
+        start: Joi.string().required(),
+        end: Joi.string().required(),
         eventDesc: Joi.string().required(),
-        eventImage: Joi.string().required(),
+        eventImage: Joi.string().optional(),
     })
     // .options({ allowUnknown: true })
 }
@@ -21,7 +21,7 @@ const userProfileSchema = {
         image: Joi.string().required(),
         surName: Joi.string().required(),
         firstName: Joi.string().required(),
-        otherName: Joi.string().required(),
+        otherName: Joi.string().optional(),
         sex: Joi.string().required(),
         dateOfBirth: Joi.string().required(),
         maritalStatus: Joi.string().required(),

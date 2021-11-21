@@ -9,8 +9,8 @@ const Schema = mongoose.Schema({
     eventName: {type: String, require: true},
     eventType: {type: String, require: true},
     eventLocation: {type: String, require: true},
-    eventDate: {type: String, require: true, unique: true},
-    eventEndDate: {type: String, require: true},
+    start: {type: String, require: true, unique: true},
+    end: {type: String, require: true},
     eventDesc: {type: String, require: true},
     eventImage: {type: String, require: true},
     dateCreated: {type: Date, default: Date.now}
