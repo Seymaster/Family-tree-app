@@ -107,7 +107,7 @@ exports.createUserProfile = async (req,res,next)=>{
         if(err.code == 11000){
             let error = err['errmsg'].split(':')[2].split(' ')[1].split('_')[0];
             res.status(500).send({
-                message: `${error} already exist`,
+                message: `${error.name} already exist`,
                 status: 11000,
                 error: error
             });
@@ -129,7 +129,7 @@ exports.getUserProfileById = async (req,res,next)=>{
     limit = limit || 100;
     try{
         let userProfile = await UserProfileRepository.all(query, {_id: -1}, page, limit)
-        if(userProfile === null){
+        if(userProfile.docs.length === 0){
             return res.status(400).send({
                 status: 404,
                 message: `No profile found for id ${profileId}`,
@@ -148,6 +148,17 @@ exports.getUserProfileById = async (req,res,next)=>{
         })
     }
 };
+
+// exports.updateEventRegistry = async (req, res, next) =>{
+//     let { profileId } = req.params;
+//     let {...payload} = req.body;
+//     if(payload.user_id) delete payload.userId;
+//     if(payload.image) delete payload.image
+//     try{
+
+//     }
+
+// }
 
 exports.getUserParent = async (req,res,next)=>{
     let { userId } = req.params;
@@ -181,7 +192,7 @@ exports.getUserSpouse = async (req,res,next)=>{
     let { userId, partnerId } = req.params;
     try{
         let spouse = await FamilyRepository.all({userId: userId, "partner.wives._id": partnerId})
-        if(spouse === null){
+        if(spouse.docs.length === 0){
             return res.status(404).send({
                 status: 404,
                 message: `No profile found for id ${userId}`,
@@ -208,7 +219,7 @@ exports.getUserOffSpring = async (req,res,next)=>{
     let { userId } = req.params;
     try{
         let Family = await FamilyRepository.all({"parent.father" : userId})
-        if(Family === null){
+        if(Family.docs.length === 0){
             return res.status(404).send({
                 status: 404,
                 message: `No profile found for id ${userId}`,

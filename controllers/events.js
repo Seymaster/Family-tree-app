@@ -86,7 +86,7 @@ exports.getEvent = async (req,res,next)=>{
     page = page || 1;
     limit = limit || 100;
     const event = await EventRepository.all(query, {_id: -1}, page, limit);;
-    if(event.length == 0){
+    if(event.docs.length === 0){
         return res.status(200).send({
             status: 404,
             message: "Not Found",
