@@ -4,33 +4,33 @@ const mongoose = require("mongoose")
 const mongoosePaginate = require("mongoose-paginate");
 
 const spouseSchema = mongoose.Schema({
-    wives: {type: String, require: false, default: null},
-    email: {type: String, require: false, default: null}
+    wives: {type: String, required: false, default: null},
+    email: {type: String, required: false, default: null}
 }) 
 
 const offSpringSchema = mongoose.Schema({
-    firstName: {type: String, require: false, default: null},
-    middleName: {type: String, require: false, default: null},
-    lastName: {type: String, require: false, default: null},
-    placeOfBirth: {type: String, require: false, default: null},
-    occupation: {type: String, require: false, default: null},
-    email: {type: String, require: false, default: null}
+    firstName: {type: String, required: false, default: null},
+    middleName: {type: String, required: false, default: null},
+    lastName: {type: String, required: false, default: null},
+    placeOfBirth: {type: String, required: false, default: null},
+    occupation: {type: String, required: false, default: null},
+    email: {type: String, required: false, default: null}
 })
 
 const Schema    = mongoose.Schema({
-    userId: {type: String, require: true, unique: true},
-    image: {type: String, require: true},
-    surName: {type: String, require: true},
-    firstName: {type: String, require: true},
-    otherName: {type: String, require: false, default: null},
-    sex: {type: String, require: true},
-    dateOfBirth: {type: String, require: true},
-    maritalStatus: {type: String, require: true},
-    phoneNumber: {type: Number, require: true},
-    fatherName: {type: String, require: true},
-    fatherEmail: {type: String, require: true},
-    motherName: {type: String, require: true},
-    motherEmail: {type: String, require: true},
+    userId: {type: String, required: true},
+    image: {type: String, required: true},
+    surName: {type: String, required: true},
+    firstName: {type: String, required: true},
+    otherName: {type: String, required: false, default: null},
+    sex: {type: String, required: true},
+    dateOfBirth: {type: String, required: true},
+    maritalStatus: {type: String, required: true},
+    phoneNumber: {type: Number, required: true},
+    fatherName: {type: String, required: true},
+    fatherEmail: {type: String, required: true},
+    motherName: {type: String, required: true},
+    motherEmail: {type: String, required: true},
     spouse: [spouseSchema],
     offSpring: [offSpringSchema],
     dateCreated: {type: Date, default: Date.now}

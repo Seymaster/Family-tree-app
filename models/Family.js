@@ -4,19 +4,19 @@ const mongoose = require("mongoose")
 const mongoosePaginate = require("mongoose-paginate");
 
 const parentSchema = mongoose.Schema({
-    father: {type: String, require: false, default: null},
-    mother: {type: String, require: false, default: null}
+    father: {type: String, required: false, default: null},
+    mother: {type: String, required: false, default: null}
 })
 
 const spouseSchema = mongoose.Schema({
-    wives: {type: String, require: false, default: null}
+    wives: {type: String, required: false, default: null}
 })
 
 const Schema    = mongoose.Schema({
-    userId: {type: String, require: false,default: null},
-    familyId: {type: String, require: true},
-    name: {type: String, require: true},
-    email: {type: String, require: true},
+    userId: {type: String, required: false,default: null},
+    familyId: {type: String, required: true},
+    name: {type: String, required: true},
+    email: {type: String, required: true},
     parent: [parentSchema],
     partner: [spouseSchema],
     dateCreated: {type: Date, default: Date.now}

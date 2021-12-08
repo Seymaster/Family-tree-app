@@ -43,9 +43,9 @@ async function createUser(email){
 
     // console.log(result);
 }
-let email = "mom1@yopmail.com"
-createUser(email)
-.then(data=> console.log(data))
-.catch(err=> console.log(err))
+// let email = "mom1@yopmail.com"
+// createUser(email)
+// .then(data=> console.log(data))
+// .catch(err=> console.log(err))
 
 module.exports = { createUser }

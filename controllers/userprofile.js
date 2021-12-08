@@ -26,7 +26,15 @@ const { sendMail } = require("./mail")
 };
 
 exports.createUserProfile = async (req,res,next)=>{
-    let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring } = req.body;
+    let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber,email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring } = req.body;
+    let userprofile = await UserProfileRepository.findOne({userId:userId})
+    if(userprofile){
+        res.status(203).send({
+            message: `Profile Exists for this User ${userId}`,
+            status: 205,
+            userId: userId
+        });
+    }else{
     let father = await FamilyRepository.findOne({email: fatherEmail})
     if(!father){
         let email = fatherEmail
@@ -94,7 +102,7 @@ exports.createUserProfile = async (req,res,next)=>{
             })
         }
     }
-    let newUserProfile = {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring }
+    let newUserProfile = {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,phoneNumber, email,fatherName,fatherEmail,motherName,motherEmail,spouse,offSpring }
     try{
         let userProfile = await UserProfileRepository.create(newUserProfile)
         return res.status(200).send({
@@ -104,22 +112,14 @@ exports.createUserProfile = async (req,res,next)=>{
         });
     }catch(err){
         console.log("here2")
-        if(err.code == 11000){
-            let error = err['errmsg'].split(':')[2].split(' ')[1].split('_')[0];
-            res.status(500).send({
-                message: `${error.name} already exist`,
-                status: 11000,
-                error: error
-            });
-        }else{
             console.log(err)
             return res.status(400).send({
             status:400,
             message: "Bad Request",
             error: err
-                })
-            }
-        };
+            })
+        }
+    };
 }
 
 exports.getUserProfileById = async (req,res,next)=>{

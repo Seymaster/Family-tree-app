@@ -5,14 +5,14 @@ const mongoosePaginate = require("mongoose-paginate");
 
 
 const Schema = mongoose.Schema({
-    userId: {type: String, require: true},
-    title: {type: String, require: true},
-    eventType: {type: String, require: true},
-    eventLocation: {type: String, require: true},
-    start: {type: String, require: true, unique: true},
-    end: {type: String, require: true},
-    eventDesc: {type: String, require: true},
-    eventImage: {type: String, require: true},
+    userId: {type: String, required: true},
+    title: {type: String, required: true},
+    eventType: {type: String, required: true},
+    eventLocation: {type: String, required: true},
+    start: {type: String, required: true, unique: true},
+    end: {type: String, required: true},
+    eventDesc: {type: String, required: true},
+    eventImage: {type: String, required: true},
     dateCreated: {type: Date, default: Date.now}
 },
 {
