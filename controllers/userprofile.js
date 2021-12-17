@@ -75,7 +75,7 @@ exports.createUserProfile = async (req,res,next)=>{
             let newFamily = {name,email,familyId}
             await FamilyRepository.create(newFamily)
             let message = `You have been added as Spouse for ${firstName} ${otherName} on our platform kindly visit our website to signup to complete your user registration`
-        await sendMail(email, message)
+            await sendMail(email, message)
         }else{
             return res.status(403).send({
                 status:403,
@@ -246,35 +246,19 @@ exports.addWives =async (req,res,next) =>{
     let { profileId } = req.params;
     let {...payload}   = req.body;
     let Spouse = await UserProfileRepository.findOne({_id: profileId})
-    console.log(Spouse)
     let userId = Spouse.userId
     if(Spouse){
-        let spouseEmail = payload.email
-        let findSpouse = await FamilyRepository.findOne({userId: userId, email: spouseEmail})
-        if(!findSpouse){
-            let { user } = await createUser(spouseEmail)
-            user = JSON.parse(user);
-            if(user.error){
-                return res.status(403).send({
-                    status:403,
-                    message: user
-                })
-            }
-            user = user.data
-            const spouseUserId = user.user.userId;
+            let spouseEmail = payload.email
             let name = payload.wives
-            let partner = [{wives: spouseUserId}]
+            let partner = [{wives: userId}]
             let parent = null
+            let familyId = userId
             let email = spouseEmail
-            let newFamily= {userId,name, email, partner, parent }
+            let newFamily= {name,familyId ,email, partner, parent }
             await FamilyRepository.create(newFamily)
-        }else{
-            return res.status(403).send({
-                status:403,
-                message: "This Spouse Already Exist for this User"
-            })
-        }
-        await UserProfileRepository.upsert({_id: profileId}, {$push: {spouse: payload}})
+            let message = `You have been added as Spouse on our platform kindly visit our website to signup to complete your user registration`
+            await sendMail(spouseEmail, message)
+            await UserProfileRepository.upsert({_id: profileId}, {$push: {spouse: payload}})
         let data = await UserProfileRepository.findOne({_id: profileId})
         return res.status(200).send({
             status:200,
@@ -296,30 +280,16 @@ exports.addOffSpring =async (req,res,next) =>{
     let {...payload}   = req.body;
     let Offspring = await UserProfileRepository.findOne({_id: profileId})
         if(Offspring){
-            let offSpringEmail = payload.email
-            let findOffSpring = await FamilyRepository.findOne({email: offSpringEmail})
-            if(!findOffSpring){
-                let { user } = await createUser(offSpringEmail)
-                user = JSON.parse(user);
-                if(user.error){
-                    return res.status(403).send({
-                        status:403,
-                        message: user
-                    })
-                }
+                let offSpringEmail = payload.email
                 let name = payload.firstName
-                let userId = payload.userId
                 let partner = null
-                let parent = [{father: userId}]
+                let familyId = Offspring.userId
+                let parent = [{father: Offspring.userId}]
                 let email = offSpringEmail
-                let newFamily= {userId,name, email, partner, parent }
+                let newFamily= {name,familyId, email, partner, parent }
                 await FamilyRepository.create(newFamily)
-            }else{
-                return res.status(403).send({
-                    status:403,
-                    message: "This Offspring Already Exist for this User"
-                })
-            }
+                let message = `You have been added as Spouse on our platform kindly visit our website to signup to complete your user registration`
+                await sendMail(email, message)
             await UserProfileRepository.upsert({_id: profileId}, {$push: {offSpring: payload}})
             let data = await UserProfileRepository.findOne({_id: profileId})
             return res.status(200).send({
