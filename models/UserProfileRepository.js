@@ -9,8 +9,7 @@ class UserProfileRepository extends Repository{
     }
 
     nonMetaFields(){
-        return ["image","surName","firstName","otherName","sex","dateOfBirth","maritalStatus","phoneNumber","fatherName",
-                "fatherEmail","motherName","motherEmail","spouse","offspring"]
+        return ["image","surName","firstName","otherName","sex","dateOfBirth","maritalStatus","email","fatherName","fatherEmail","motherName","motherEmail","spouse","offSpring"]
     }
 }
 

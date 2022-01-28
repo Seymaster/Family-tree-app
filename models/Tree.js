@@ -9,9 +9,9 @@ const Schema    = mongoose.Schema({
     name: {type: String, required: true},
     email: {type: String, required: true},
     gender: {type: String, required: true},
-    parentFather: {type: String, required: false,default: null},
-    parentMother: {type: String, required: false,default: null},
-    spouse: {type: String, required: false,default: null},
+    parent: [{type: Object, required: false,default: null}],
+    spouse: [{type: Object, required: false,default: null}],
+    children: [{type: Object, required: false,default: null}],
     createdAt: {type: Date, default: Date.now},
     updateAt: {type: Date}
 
@@ -30,8 +30,4 @@ const Schema    = mongoose.Schema({
 
 Schema.index({"$**":"text"});
 Schema.plugin(mongoosePaginate);
-const Family =  mongoose.model("Family", Schema)
-
-
-
-module.exports = Family;
+const Tree =  mongoose.model("Tree", Schema)

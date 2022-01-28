@@ -3,6 +3,8 @@
 const mongoose = require("mongoose")
 const mongoosePaginate = require("mongoose-paginate");
 
+
+
 const spouseSchema = mongoose.Schema({
     wives: {type: String, required: false, default: null},
     email: {type: String, required: false, default: null}
@@ -17,8 +19,8 @@ const offSpringSchema = mongoose.Schema({
     email: {type: String, required: false, default: null}
 })
 
-const Schema    = mongoose.Schema({
-    userId: {type: String, required: true},
+const userSchema    = mongoose.Schema({
+    userId: {type: String, required: true, unique: true},
     image: {type: String, required: true},
     surName: {type: String, required: true},
     firstName: {type: String, required: true},
@@ -26,14 +28,14 @@ const Schema    = mongoose.Schema({
     sex: {type: String, required: true},
     dateOfBirth: {type: String, required: true},
     maritalStatus: {type: String, required: true},
-    phoneNumber: {type: Number, required: true},
+    email: {type: String, required: true},
     fatherName: {type: String, required: true},
     fatherEmail: {type: String, required: true},
     motherName: {type: String, required: true},
     motherEmail: {type: String, required: true},
     spouse: [spouseSchema],
     offSpring: [offSpringSchema],
-    dateCreated: {type: Date, default: Date.now}
+    createdAt: {type: Date, default: Date.now} 
 }, 
 {
     toJSON: {
@@ -45,10 +47,10 @@ const Schema    = mongoose.Schema({
     }
 }
 );
-Schema.index({"$**":"text"});
-Schema.plugin(mongoosePaginate);
-const UserProfile =  mongoose.model("UserProfile", Schema)
 
+// Schema.index({"$**":"text"});
+// Schema.plugin(mongoosePaginate);
+const UserProfile =  mongoose.model("UserProfile", userSchema)
 
 
 module.exports = UserProfile;

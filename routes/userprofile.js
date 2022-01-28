@@ -19,7 +19,8 @@ const schemas = require("../middleware/schemas");
 const { validate } = require("../middleware/helper");
 
 
-router.post("/userprofile", validate(schemas.userProfileSchema.userProfilePost, 'body'), userProfileController.createUserProfile)
+router.post("/userprofile", userProfileController.createUserProfile)
+// , validate(schemas.userProfileSchema.userProfilePost, 'body')
 
 router.get("/userprofile", userProfileController.getUserProfileById)
 
@@ -27,15 +28,17 @@ router.put("/updatespouse/:profileId", userProfileController.addWives)
 
 router.put("/updateoffspring/:profileId", userProfileController.addOffSpring)
 
-router.get("/getparent/:userId", userProfileController.getUserParent)
+router.get("/familytree/:userId", userProfileController.getFamilyTree)
 
-router.get("/getspouse/:userId/:partnerId", userProfileController.getUserSpouse)
+// router.get("/getparent/:userId", userProfileController.getUserParent)
 
-router.get("/getoffspring/:userId", userProfileController.getUserOffSpring)
+// router.get("/getspouse/:userId/:partnerId", userProfileController.getUserSpouse)
 
-router.get("/allfamilies/:familyId", userProfileController.getBirthday)
+// router.get("/getoffspring/:userId", userProfileController.getUserOffSpring)
 
-// router.get("/familytree/:userId", userProfileController.getfamilytree)
+// router.get("/allfamilies/:familyId", userProfileController.getBirthday)
+
+// router.get("/familytree/:id", userProfileController.familytree)
 
 
 

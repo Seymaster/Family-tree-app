@@ -44,6 +44,10 @@ class MongodbRepository {
         }
     }
 
+    lookup(condition){
+        return this.Model.aggregate([{'$match': condition},{'$lookup': {'from': 'parents','localField': 'user_id', 'foreignField': 'parents', 'as': 'parents'}}])
+    }
+
     deleteMany(condition = {}){
         return this.Model.deleteMany(condition);
     }

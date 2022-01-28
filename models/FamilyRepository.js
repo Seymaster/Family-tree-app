@@ -9,8 +9,10 @@ class FamilyRepository extends Repository{
     }
 
     nonMetaFields(){
-        return ["userId","familyId","name","email","partner","parent"]
+        return ["userId","name","email","gender","parentFather","parentMother","spouse"]
     }
 }
+
+
 
 module.exports = (new FamilyRepository());

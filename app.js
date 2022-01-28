@@ -26,6 +26,9 @@ app.use("/api/v1", eventRoute);
 app.use("/events", webookRouter)
 
 
+
+mongoose.set("debug", true)
+
 mongoose.connect(config.dbUrl, {
     useNewUrlParser: true, useUnifiedTopology: true
 })
