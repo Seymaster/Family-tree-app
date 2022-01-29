@@ -45,7 +45,7 @@ router.get("/getsibling/:userId", userProfileController.getUserSibling)
 
 // router.get("/allfamilies/:familyId", userProfileController.getBirthday)
 
-// router.get("/familytree/:id", userProfileController.familytree)
+router.get("/familytree/:userId", userProfileController.FamiyTree)
 
 
 

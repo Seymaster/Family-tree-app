@@ -4,7 +4,8 @@ const UserRelationshipRepository = require("../models/UserRelationshipRepository
 const EventRepository = require("../models/EventRepository");
 const { createNewUser } = require("../Services/user");
 const { sendMail } = require("../Services/mail")
-const { ObjectId } = require("mongoose")
+const { ObjectId } = require("mongoose");
+const { func } = require("joi");
 
 /**
  * Create UserProfile and CRUD details
@@ -247,6 +248,95 @@ exports.getRelationshipByType = async (req,res,next)=>{
     }
 };
 
+
+// Family Tree Build Up
+async function getParent(userId){
+    try{
+        let type = ["Father", "Mother"]
+        let Relationship = await UserRelationshipRepository.all({primaryUserId: userId, $or: [{type: {$in: type}}]}) 
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let parents = await UserProfileRepository.all({
+            $or: [{userId: {$in: profile}}]
+        }, {_id: -1}) 
+    return  parents
+    }catch(err){
+        return err
+    }
+}
+
+async function getSpouse(userId){
+    try {
+        let Relationship = await UserRelationshipRepository.all({userId: userId, type: "Spouse"})
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let Spouse = await UserProfileRepository.all({
+            $or: [{userId: {$in: profile}}]
+        }, {_id: -1}) 
+        return Spouse  
+    }catch(err){
+        return err
+    }
+}
+
+async function getChildren(userId){
+    try{
+        let type = ["Son", "Daughter"]
+        let Relationship = await UserRelationshipRepository.all({primaryUserId: userId, $or: [{type: {$in: type}}]}) 
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let children = await UserProfileRepository.all({
+        $or: [{userId: {$in: profile}}]
+        }, {_id: -1}) 
+        return children
+    }catch(err){
+        return err
+    };
+};
+
+async function getSibling(userId){
+    try{
+        let type = ["Sister", "Brother"]
+        let Relationship = await UserRelationshipRepository.all({primaryUserId: userId, $or: [{type: {$in: type}}]}) 
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let sibling = await UserProfileRepository.all({
+            $or: [{userId: {$in: profile}}]
+        }, {_id: -1}) 
+        return sibling
+    }catch(err){
+        return err
+        };
+};
+
+exports.FamiyTree = async (req,res,next)=>{
+    let { userId } = req.params;
+    let Relationship = await UserRelationshipRepository.all({userId})
+    let profile = [userId];
+    Relationship.map( data =>{profile.push(data.secondaryUserId)})
+    let families = await UserProfileRepository.all({
+        $or: [{userId: {$in: profile}}]
+    }, {_id: -1}) 
+    treeUsers = []
+    for (let family of families) {
+        let userId = family.userId
+        let treeUser = {
+            "id": userId,
+            "name": family.firstName,
+            "parent": await getParent(userId),
+            "spouse": await getSpouse(userId),
+            "sibling": await getSibling(userId),
+            "children": await getChildren(userId) 
+        }
+        treeUsers.push(treeUser)
+        }
+    // console.log(treeUsers)
+    return res.status(200).send({
+        status: 200,
+        message: "Loaded",
+        data: treeUsers
+    })
+}
 
 
 
