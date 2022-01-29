@@ -28,6 +28,7 @@ const { ObjectId } = require("mongoose")
     return res.status(code).json({data});
 };
 
+// Creating a UserProfile
 exports.createUserProfile = async (req,res,next)=>{
     let {
         userId,
@@ -187,7 +188,7 @@ exports.createUserProfile = async (req,res,next)=>{
         }
     }
 
-
+// Function to get Parent
 async function getParent(userId){
     try{
         let user = await FamilyRepository.findOne({userId: userId}) 
@@ -217,7 +218,7 @@ async function getSibling(userId){
     }
 }
 
-
+// Function to get Spouse
 async function getSpouse(userId){
     try {
         let user = await FamilyRepository.findOne({userId: userId})
@@ -229,6 +230,7 @@ async function getSpouse(userId){
     }
 }
 
+// Function to get Children
 async function getChildren(userId){
     try {
         let children = await FamilyRepository.all({parentFather: userId})
@@ -238,9 +240,7 @@ async function getChildren(userId){
     }
 }
 
-// let userId = "12345678"
-// getChildren(userId).then(data=>console.log(data)).catch(err=> console.log(err))
-
+// Getting a UserProfile by ID or any key
 exports.getUserProfileById = async (req,res,next)=>{
     console.log(req.query);
     console.log(req.id);
@@ -285,7 +285,7 @@ exports.getUserProfileById = async (req,res,next)=>{
 
 
 
-
+// Adding Spouse to an Existing UserProfile
 exports.addWives =async (req,res,next) =>{
     let { profileId } = req.params;
     let {...payload}   = req.body;
@@ -332,7 +332,7 @@ exports.addWives =async (req,res,next) =>{
     }
 }
 
-
+// Adding Children to an Existing UserProfile
 exports.addOffSpring =async (req,res,next) =>{
     let { profileId } = req.params;
     let {...payload}   = req.body;
@@ -380,6 +380,8 @@ exports.addOffSpring =async (req,res,next) =>{
         }
 }
 
+
+// Creating a Family Tree
 exports.getFamilyTree= async (req,res,next)=>{
    // query: select all users
    let { userId } = req.params;
