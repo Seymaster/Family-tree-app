@@ -18,21 +18,27 @@ const userProfileController = require("../controllers/userprofile")
 const schemas = require("../middleware/schemas");
 const { validate } = require("../middleware/helper");
 
-
+// Create User Profile
 router.post("/userprofile", userProfileController.createUserProfile)
 // , validate(schemas.userProfileSchema.userProfilePost, 'body')
 
+// Create Relationship 
 router.post("/relationship", userProfileController.createUserRelationship)
 
+// Get User Profile by UserId, ProfileId and other key value
 router.get("/userprofile", userProfileController.getUserProfileById)
 
-router.get("/familytree/:userId", userProfileController.getUserRelationshipTree)
+// Get relationship by Type, primaryUserId etc
+router.get("/relationship", userProfileController.getRelationshipByType)
 
-// router.get("/getparent/:userId", userProfileController.getUserParent)
+// Get Parent with UserId
+router.get("/getparent/:userId", userProfileController.getUserParent)
 
-// router.get("/getspouse/:userId/:partnerId", userProfileController.getUserSpouse)
+// Get Spouse with userId
+router.get("/getspouse/:userId", userProfileController.getUserSpouse)
 
-// router.get("/getoffspring/:userId", userProfileController.getUserOffSpring)
+// Get Children with userId
+router.get("/getchildren/:userId", userProfileController.getUserChildren)
 
 // router.get("/allfamilies/:familyId", userProfileController.getBirthday)
 

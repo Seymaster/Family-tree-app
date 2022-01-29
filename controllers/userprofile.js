@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const UserProfileRepository = require("../models/UserProfileRepository");
 const UserRelationshipRepository = require("../models/UserRelationshipRepository");
 const EventRepository = require("../models/EventRepository");
-const { createUser, findUser } = require("../Services/user");
+const { createNewUser } = require("../Services/user");
 const { sendMail } = require("../Services/mail")
 const { ObjectId } = require("mongoose")
 
@@ -30,16 +30,7 @@ const { ObjectId } = require("mongoose")
 
 // Creating a UserProfile
 exports.createUserProfile = async (req,res,next)=>{
-    let {
-        userId,
-        image,
-        surName,
-        firstName,
-        otherName,
-        sex,
-        dateOfBirth,
-        maritalStatus,
-        email } = req.body;
+    let {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email } = req.body;
     let newUserProfile = {userId,image,surName,firstName,otherName,sex,dateOfBirth,maritalStatus,email }
     try{
         let userProfile = await UserProfileRepository.create(newUserProfile);
@@ -65,17 +56,7 @@ exports.createUserRelationship = async (req,res,next)=>{
     let primaryUserId = userId
     let UserProfile = await UserProfileRepository.findOne({email:email})
     if (!UserProfile){
-            let user = await createUser(email);
-            user= user.user
-            user = JSON.parse(user);
-            if(user.error){
-                return res.status(403).send({
-                    status:403,
-                    message: user
-                })
-            }
-            user = user.data
-            let userId = user.user.userId
+            let userId = await createNewUser(email)
             let userProfile = {firstName: name, email, userId}
             await UserProfileRepository.create(userProfile)
             let secondaryUserId = userId
@@ -92,7 +73,7 @@ exports.createUserRelationship = async (req,res,next)=>{
         let userRelationship = {primaryUserId,secondaryUserId,type}
         let data = await UserRelationshipRepository.create(userRelationship)  
         return res.status(200).send({
-            status:202,
+            status: 200,
             message: "Relationship added successfully",
             data: data
         }) 
@@ -101,8 +82,8 @@ exports.createUserRelationship = async (req,res,next)=>{
         if(err.code == 11000){
             let error = err['errmsg'].split(':')[2].split(' ')[1].split('_')[0];
             res.status(500).send({
-                message: `${error} already exist`,
-                status: 11000,
+                message: `User Relationship Already Exist`,
+                status: 500,
                 error: error
             });
         }else{
@@ -119,12 +100,15 @@ exports.createUserRelationship = async (req,res,next)=>{
 
 
 // Function to get Parent
-async function getParent(userId){
+exports.getUserParent = async (req,res,next)=>{
+    let { userId } = req.params;
     try{
-        let user = await UserRelationshipRepository.findOne({userId: userId}) 
-        let parent = [user.parentMother, user.parentFather]
-        let parents = await UserRelationshipRepository.all({
-            $or: [{userId: {$in: parent}}]
+        let type = ["Father", "Mother"]
+        let Relationship = await UserRelationshipRepository.all({primaryUserId: userId, $or: [{type: {$in: type}}]}) 
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let parents = await UserProfileRepository.all({
+            $or: [{userId: {$in: profile}}]
         }, {_id: -1}) 
     return parents
     }catch(err){
@@ -133,42 +117,74 @@ async function getParent(userId){
 }
 
 
+// Get User Sibling
+exports.getUserSibling = async (req,res,next)=>{
+    let {userId } = req.params
+    try{
+        let type = ["Sister", "Brother"]
+        let Relationship = await UserRelationshipRepository.all({primaryUserId: userId, $or: [{type: {$in: type}}]}) 
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let sibling = await UserProfileRepository.all({
+            $or: [{userId: {$in: profile}}]
+        }, {_id: -1}) 
+        message = `Sibling for Id ${query} loaded successfully`
+        return createSuccessResponse(res, sibling ,message)
+    }catch(err){
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err
+        }) 
+    };
+};
 
 
 
-async function getSibling(userId){
-    try {
-        let user = await UserRelationshipRepository.findOne({userId: userId})
-        let father = user.fatherEmail
-        let mother = user.motherEmail
-        let parent = await UserRelationshipRepository.all({userId: father, userId: mother})
-        return parent
-    } catch (error) {
-        return error
-    }
-}
+// Get Children for UserId
+exports.getUserChildren = async (req,res,next)=>{
+    let {userId } = req.params
+    try{
+        let type = ["Son", "Daughter"]
+        let Relationship = await UserRelationshipRepository.all({primaryUserId: userId, $or: [{type: {$in: type}}]}) 
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let children = await UserProfileRepository.all({
+            $or: [{userId: {$in: profile}}]
+        }, {_id: -1}) 
+        message = `Spouse for Id ${query} loaded successfully`
+        return createSuccessResponse(res, children ,message)
+    }catch(err){
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err
+        }) 
+    };
+};
+
 
 // Function to get Spouse
-async function getSpouse(userId){
+exports.getUserSpouse = async (req,res,next)=>{
+    let { userId } = req.param;
     try {
-        let user = await UserRelationshipRepository.findOne({userId: userId})
-        let spouse = user.spouse
-        let Spouse = await UserRelationshipRepository.all({userId: spouse})
-        return Spouse
-    } catch (error) {
-        return error
+        let Relationship = await UserRelationshipRepository.all({userId: userId, type: "Spouse"})
+        let profile = [];
+        Relationship.map( data =>{profile.push(data.secondaryUserId)})
+        let Spouse = await UserProfileRepository.all({
+            $or: [{userId: {$in: profile}}]
+        }, {_id: -1}) 
+        message = `Spouse for Id ${query} loaded successfully`
+        return createSuccessResponse(res, Spouse ,message)   
+    }catch(err){
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err
+        })
     }
 }
 
-// Function to get Children
-async function getChildren(userId){
-    try {
-        let children = await UserRelationshipRepository.all({parentFather: userId})
-        return children
-    } catch (error) {
-        return error
-    }
-}
 
 // Getting a UserProfile by ID or any key
 exports.getUserProfileById = async (req,res,next)=>{
@@ -198,42 +214,36 @@ exports.getUserProfileById = async (req,res,next)=>{
     }
 };
 
-
-// Creating a UserRelationship Tree
-exports.getUserRelationshipTree= async (req,res,next)=>{
-   // query: select all users
-   let { userId } = req.params;
-   let user = await UserRelationshipRepository.findOne({userId})
-   if(!user){
-        return res.status(404).send({
-            status:404,
-            message: "No UserRelationship Tree for this user" 
-        });
-   }
-   let children = await getChildren(userId)
-   let listUsers = [user.userId, user.parentFather,user.parentMother,user.spouse]
-   children.map(data =>{listUsers.push(data.userId)}) 
-   let users = await UserRelationshipRepository.all({
-                $or: [{userId: {$in: listUsers}}]
+// Get Relationship By Type
+exports.getRelationshipByType = async (req,res,next)=>{
+    let {...query} = req.query;
+    let {page,limit } = req.query;
+    page = page || 1;
+    limit = limit || 100;
+    try{
+        let userProfile = await UserRelationshipRepository.all(query, {_id: -1}, page, limit);
+        if(userProfile.docs.length === 0){
+            return res.status(400).send({
+                status: 404,
+                message: `No Relationship found for id ${query}`,
+                data: userProfile
             })
-    let treeUsers =  [];
-    // iterate through users - 
-    users.map( async element => {
-        treeUsers.push({"userId": element.userId,
-                         "name": element.name,
-                         "gender": element.gender,
-                         "parents": [],
-                         "spouses": [],
-                         "children": []  
-                        })
-            })
-        // console.log(treeUsers)
-        return res.status(200).send({
-            status: 200,
-            message: "UserRelationship tree return succesfully",
-            data:treeUsers
+        }
+        else{
+            message = `Relationship for ${query} loaded successfully`
+            return createSuccessResponse(res, userProfile ,message)
+        }
+    }catch(err){
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err
         })
     }
+};
+
+
+
 
 
 

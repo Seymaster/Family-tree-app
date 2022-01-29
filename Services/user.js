@@ -62,9 +62,25 @@ async function findUser(email){
             return {error};
         }
 }
-// let email = "mom1@yopmail.com"
-// createUser(email)
+
+async function createNewUser(email){
+    try {
+        let fetchUser = await findUser(email)
+        fetchUser = JSON.parse(fetchUser)
+        if(fetchUser.data.length === 0 ){
+            let newUser = await createUser(email)
+            newUser= JSON.parse(newUser.user)
+            return newUser.data.user.userId
+        }
+        return fetchUser.data[0].userId 
+    } catch(error) {
+        return error
+    }
+}
+
+// let email = "testhdh@tu0.com"
+// createNewUser(email)
 // .then(data=> console.log(data))
 // .catch(err=> console.log(err))
 
-module.exports = { createUser, findUser }
+module.exports = { createUser, findUser, createNewUser }
