@@ -31,6 +31,3 @@ EXPOSE 80
 
 
 CMD npm run start
-
-
-#DOCKER_NAME=registry.gitlab.com/tm30/vas-aggregator-platform/backend/campaign-service
