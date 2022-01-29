@@ -112,7 +112,11 @@ exports.getUserParent = async (req,res,next)=>{
         }, {_id: -1}) 
     return parents
     }catch(err){
-        return err 
+        return res.status(400).send({
+            status: 404,
+            message: "Not Found",
+            error: err
+        })
     }
 }
 
@@ -128,7 +132,7 @@ exports.getUserSibling = async (req,res,next)=>{
         let sibling = await UserProfileRepository.all({
             $or: [{userId: {$in: profile}}]
         }, {_id: -1}) 
-        message = `Sibling for Id ${query} loaded successfully`
+        message = `Sibling for Id ${userId} loaded successfully`
         return createSuccessResponse(res, sibling ,message)
     }catch(err){
         return res.status(400).send({
@@ -152,7 +156,7 @@ exports.getUserChildren = async (req,res,next)=>{
         let children = await UserProfileRepository.all({
             $or: [{userId: {$in: profile}}]
         }, {_id: -1}) 
-        message = `Spouse for Id ${query} loaded successfully`
+        message = `Spouse for Id ${userId} loaded successfully`
         return createSuccessResponse(res, children ,message)
     }catch(err){
         return res.status(400).send({
@@ -166,7 +170,7 @@ exports.getUserChildren = async (req,res,next)=>{
 
 // Function to get Spouse
 exports.getUserSpouse = async (req,res,next)=>{
-    let { userId } = req.param;
+    let { userId } = req.params;
     try {
         let Relationship = await UserRelationshipRepository.all({userId: userId, type: "Spouse"})
         let profile = [];
@@ -174,7 +178,7 @@ exports.getUserSpouse = async (req,res,next)=>{
         let Spouse = await UserProfileRepository.all({
             $or: [{userId: {$in: profile}}]
         }, {_id: -1}) 
-        message = `Spouse for Id ${query} loaded successfully`
+        message = `Spouse for Id ${userId} loaded successfully`
         return createSuccessResponse(res, Spouse ,message)   
     }catch(err){
         return res.status(400).send({
