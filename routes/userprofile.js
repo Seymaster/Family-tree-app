@@ -40,6 +40,9 @@ router.get("/getspouse/:userId", userProfileController.getUserSpouse)
 // Get Children with userId
 router.get("/getchildren/:userId", userProfileController.getUserChildren)
 
+// Get Sibling with userId
+router.get("/getsibling/:userId", userProfileController.getUserSibling)
+
 // router.get("/allfamilies/:familyId", userProfileController.getBirthday)
 
 // router.get("/familytree/:id", userProfileController.familytree)

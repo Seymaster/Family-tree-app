@@ -110,7 +110,8 @@ exports.getUserParent = async (req,res,next)=>{
         let parents = await UserProfileRepository.all({
             $or: [{userId: {$in: profile}}]
         }, {_id: -1}) 
-    return parents
+    message = `Parent for Id ${userId} loaded successfully`
+    return createSuccessResponse(res, parents ,message)
     }catch(err){
         return res.status(400).send({
             status: 404,
