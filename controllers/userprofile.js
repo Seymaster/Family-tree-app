@@ -202,6 +202,21 @@ async function getParent(userId){
 }
 
 
+
+async function getParentssdjf(userId){
+    try{
+        let user = await FamilyRepository.findOne({userId: userId}) 
+        let parent = [user.parentMother, user.parentFather]
+        let parents = await FamilyRepository.all({
+            $or: [{userId: {$in: parent}}]
+        }, {_id: -1}) 
+    return parents
+    }catch(err){
+        return err 
+    }
+}
+
+
 async function getSibling(userId){
     try {
         let user = await FamilyRepository.findOne({userId: userId})
