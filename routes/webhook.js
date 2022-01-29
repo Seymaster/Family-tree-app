@@ -1,6 +1,6 @@
 const express = require("express");
 const router  = express.Router();
-const WebhookController = require("../controllers/webhook")
+const WebhookController = require("../Services/webhook")
 
 
 // GET /all events

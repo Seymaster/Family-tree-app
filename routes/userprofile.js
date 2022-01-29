@@ -22,13 +22,11 @@ const { validate } = require("../middleware/helper");
 router.post("/userprofile", userProfileController.createUserProfile)
 // , validate(schemas.userProfileSchema.userProfilePost, 'body')
 
+router.post("/relationship", userProfileController.createUserRelationship)
+
 router.get("/userprofile", userProfileController.getUserProfileById)
 
-router.put("/updatespouse/:profileId", userProfileController.addWives)
-
-router.put("/updateoffspring/:profileId", userProfileController.addOffSpring)
-
-router.get("/familytree/:userId", userProfileController.getFamilyTree)
+router.get("/familytree/:userId", userProfileController.getUserRelationshipTree)
 
 // router.get("/getparent/:userId", userProfileController.getUserParent)
 

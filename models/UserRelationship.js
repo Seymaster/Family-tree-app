@@ -5,13 +5,9 @@ const mongoosePaginate = require("mongoose-paginate");
 
 
 const Schema    = mongoose.Schema({
-    userId: {type: String, required: true},
-    name: {type: String, required: true},
-    email: {type: String, required: true},
-    gender: {type: String, required: true},
-    parentFather: {type: String, required: false,default: null},
-    parentMother: {type: String, required: false,default: null},
-    spouse: {type: String, required: false,default: null},
+    primaryUserId: {type: String, required: true},
+    secondaryUserId:   {type: String, required: true, unique: true},
+    type:   {type: String, required: true},
     createdAt: {type: Date, default: Date.now},
     updateAt: {type: Date}
 
@@ -30,8 +26,8 @@ const Schema    = mongoose.Schema({
 
 Schema.index({"$**":"text"});
 Schema.plugin(mongoosePaginate);
-const Family =  mongoose.model("Family", Schema)
+const UserRelationship =  mongoose.model("UserRelationship", Schema)
 
 
 
-module.exports = Family;
+module.exports = UserRelationship;

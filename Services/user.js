@@ -43,9 +43,28 @@ async function createUser(email){
 
     // console.log(result);
 }
+
+async function findUser(email){
+    let requestOptions = {
+        method: 'GET',
+        headers:{  
+            "client-secret": clientSecret,
+            "client-id": clientId,
+            "Content-Type": "application/json"
+        },
+        redirect: 'follow'
+        };
+        try{
+            const response = await fetch(`${baseUrl}/users/v1/users?email=${email}`, requestOptions)
+            return  await response.text();
+        }
+        catch(error){
+            return {error};
+        }
+}
 // let email = "mom1@yopmail.com"
 // createUser(email)
 // .then(data=> console.log(data))
 // .catch(err=> console.log(err))
 
-module.exports = { createUser }
+module.exports = { createUser, findUser }
